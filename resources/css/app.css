@@ -751,3 +751,19 @@ span.flatpickr-weekday,
     opacity: 0.8;
     cursor: grabbing; /* Changes the cursor to indicate dragging */
 }
+
+/* Additional utility classes for login design */
+@layer utilities {
+    .focus\:outline-hidden:focus {
+        outline: none;
+    }
+
+    .z-999999 {
+        z-index: 999999;
+    }
+
+    .size-14 {
+        width: 3.5rem;
+        height: 3.5rem;
+    }
+}
