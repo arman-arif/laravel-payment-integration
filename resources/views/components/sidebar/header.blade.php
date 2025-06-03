@@ -1,24 +1,25 @@
 @props([
-    'logoUrl' => 'index.html',
-    'logoLight' => './images/logo/logo.svg',
-    'logoDark' => './images/logo/logo-dark.svg',
-    'logoIcon' => './images/logo/logo-icon.svg'
+    'barndUrl' => '/dashboard',
+    'logoLight' => logo('light'),
+    'logoDark' => logo('dark'),
+    'logoIcon' => logo('icon')
 ])
 
-<!-- SIDEBAR HEADER -->
 <div
     :class="sidebarToggle ? 'justify-center' : 'justify-between'"
     class="flex items-center gap-2 pt-8 sidebar-header pb-7"
 >
-    <a href="{{ $logoUrl }}">
-        <span class="logo" :class="sidebarToggle ? 'hidden' : ''">
-            <img class="dark:hidden" src="{{ $logoLight }}" alt="Logo" />
-            <img
-                class="hidden dark:block"
-                src="{{ $logoDark }}"
-                alt="Logo"
-            />
-        </span>
+    <a href="{{ $barndUrl }}" class="block w-full">
+        <div class="logo w-full" :class="sidebarToggle ? 'hidden' : ''">
+            <div class="flex justify-center">
+                <img class="dark:hidden h-10" src="{{ $logoLight }}" alt="Logo" />
+                <img
+                    class="hidden dark:block h-10"
+                    src="{{ $logoDark }}"
+                    alt="Logo"
+                />
+            </div>
+        </div>
 
         <img
             class="logo-icon"
@@ -28,4 +29,3 @@
         />
     </a>
 </div>
-<!-- SIDEBAR HEADER -->
