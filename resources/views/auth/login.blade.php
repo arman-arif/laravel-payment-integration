@@ -94,15 +94,6 @@
                 </div>
             </form>
 
-            <div class="mt-5">
-                <p class="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
-                    Don't have an account?
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}"
-                            class="text-brand-500 hover:text-brand-600 dark:text-brand-400">Sign Up</a>
-                    @endif
-                </p>
-            </div>
         </div>
     </div>
 </x-guest-layout>
