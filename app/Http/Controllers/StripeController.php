@@ -14,11 +14,13 @@ class StripeController extends Controller
     {
         $paymentIntent = $stripe->retrivePaymentIntent($request->payment_intent);
 
-        $charge = $stripe->retrieveCharge($paymentIntent['latest_charge']);
-
-        //dd($charge['created']);
-
         $payment = Payment::where('payment_id', $paymentIntent['id'])->first();
+
+        if ($paymentIntent['status'] !== 'succeeded') {
+            return to_route('payment', $payment->id)->with('error', 'Payment failed.');
+        }
+
+        $charge = $stripe->retrieveCharge($paymentIntent['latest_charge']);
 
         $paymentMeta = (array)($payment->payment_meta ?? []);
         $paymentMeta['charge_id'] = $charge['id'];

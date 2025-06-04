@@ -35,7 +35,7 @@ class StripeService
     {
         $paymentIntent = $this->stripe->paymentIntents->create([
             // 'statement_descriptor' => $this->statementDescriptor,
-            // 'automatic_payment_methods' => ['enabled' => true],
+            'automatic_payment_methods' => ['enabled' => false],
             'payment_method_types' => $this->paymentMethods,
             'description' => $description,
             'currency' => Str::lower($currency),

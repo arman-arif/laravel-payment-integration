@@ -238,7 +238,7 @@
                                 </td>
                                 <td class="px-5 py-4 sm:px-6 text-center">
                                     <button
-                                        {{--wire:click="togglePaymentStatus('{{ $payment->id }}')"--}}
+                                        wire:click="togglePaymentStatus('{{ $payment->id }}')"
                                         class="rounded-full px-3 py-1 text-xs font-medium transition-colors duration-200 {{ $payment->is_paid
                                                     ? 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50'
                                                     : 'bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50' }}"
@@ -337,6 +337,11 @@
                 </div>
 
                 <div class="space-y-4">
+
+                    <div class="mb-4 dark:text-white">
+                        ID: {{ $viewingPayment->id }}
+                    </div>
+
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <!-- Name -->
                         <div>

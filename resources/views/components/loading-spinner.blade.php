@@ -14,8 +14,8 @@ $sizeClasses = [
 
 $colorClasses = [
     'blue' => 'text-blue-600',
-    'white' => 'text-white',
-    'gray' => 'text-gray-600',
+    'white' => 'text-white dark:text-gray-900',
+    'gray' => 'text-gray-600 dark:text-gray-300',
     'green' => 'text-green-600',
     'red' => 'text-red-600'
 ];

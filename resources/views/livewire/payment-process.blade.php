@@ -84,7 +84,7 @@ class extends Component {
         ];
     }
 
-    public function checkIfPaymentComplete($paymentIntentId)
+    public function checkIfPaymentComplete($paymentIntentId): void
     {
         $stripe = new StripeService();
         $paymentIntent = $stripe->retrivePaymentIntent($paymentIntentId);
@@ -112,6 +112,7 @@ class extends Component {
     {
         $this->currentGateway = match ($method) {
             'card', => 'stripe',
+            'paypal', => 'paypal',
             default => null
         };
 
@@ -174,34 +175,50 @@ class extends Component {
                         Complete Payment
                     </h3>
 
-                    <div class="mb-4">
+                    <div class="flex gap-4 mb-4">
                         <button
-                            class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-semibold shadow-theme-xs ring-1 transition hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]"
-                            :class="currentGateway === 'stripe' ? 'ring-sky-600 text-sky-600' : 'text-gray-600 ring-gray-300 dark:ring-gray-700'"
+                            class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-semibold shadow-theme-xs ring-1 transition hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-white/[0.03] outline-none"
+                            :class="currentGateway === 'stripe' ? 'ring-sky-800 text-sky-700' : 'text-gray-600 ring-gray-300 dark:text-gray-400 dark:ring-gray-700'"
                             wire:click="setGateway('card')"
-                            @click="showLoader = true; showSelectMessage = false;"
-                            @disabled($stripeCardReady)
+                            @click="showLoader = !stripeCardReady; showSelectMessage = false;"
+                            :disabled="stripeCardReady && currentGateway === 'stripe'"
                         >
                             Credit/Debit Card
                         </button>
+                        <button
+                            class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-semibold shadow-theme-xs ring-1 transition hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-white/[0.03] outline-none"
+                            :class="currentGateway === 'paypal' ? 'ring-sky-800 text-sky-700' : 'text-gray-600 ring-gray-300 dark:text-gray-400 dark:ring-gray-700'"
+                            wire:click="setGateway('paypal')"
+                            @click="showSelectMessage = false;"
+                        >
+                            PayPal
+                        </button>
                     </div>
 
-                    <div wire:ignore>
+                    <div wire:ignore x-show="currentGateway==='stripe'">
                         <div class="w-full mb-4" id="stripe-payment-element"></div>
                     </div>
 
+                    <div wire:ignore x-show="currentGateway==='paypal'">
+                        <div class="w-full mb-4" id="paypal-container"></div>
+                        <div class="text-center py-12 text-gray-500 dark:text-gray-400 border dark:border-gray-700 rounded-lg text-lg uppercase font-medium">
+                            Coming Soon
+                        </div>
+                    </div>
+
                     <div class="flex justify-center items-center min-h-40 mb-8" x-show="showLoader" x-cloak>
-                        <x-loading-spinner size="xl"/>
+                        <x-loading-spinner size="xl" color="gray"/>
                     </div>
 
                     @if($stripeCardReady)
                         <button
                             class="items-center gap-2 rounded-lg bg-sky-600 text-white px-4 py-2 text-lg font-medium shadow-theme-xs transition hover:bg-sky-700 dark:hover:bg-sky-500 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
                             wire:click="$dispatch('stripe.confirmConfirmPayment')"
+                            x-show="currentGateway==='stripe'"
                             @disabled($paymentProcessing)
                         >
                             @if($paymentProcessing)
-                                <x-loading-spinner color="white" size="sm"> Processing Payment... </x-loading-spinner>
+                                <x-loading-spinner color="gray" size="sm"> Processing Payment... </x-loading-spinner>
                             @else
                                 <span>Pay {{ $payment->getAmountString() }}</span>
                             @endif
@@ -216,6 +233,22 @@ class extends Component {
             </div>
         </div>
     </div>
+
+    @if (session('error'))
+        <script>
+            document.addEventListener('livewire:init', () => {
+                setTimeout(() => {
+                    dispatchEvent(new CustomEvent('toast', {
+                        detail: {
+                            type: 'error',
+                            title: 'Payment Failed!',
+                            message: "Payment process was failed!"
+                        }
+                    }));
+                }, 2000)
+            });
+        </script>
+    @endif
 </div>
 
 @script
@@ -254,17 +287,18 @@ class extends Component {
                         name: customer.name,
                         email: customer.email,
                     }
-                }
+                },
+                business: { name: "PHD CAR RENT LTD." }
             };
             const paymentElement = elements.create('payment', elementOptions);
 
             paymentElement.mount('#stripe-payment-element');
 
-            Livewire.on('dark-mode', debounce(({darkMode}) => {
+            Livewire.on('dark-mode', () => {
                 elements.update({
                     appearance: elementAppearance()
                 });
-            }, 100));
+            });
 
             Livewire.on('stripe.confirmConfirmPayment', debounce(() => {
                 $wire.updatePayment(paymentIntent.id);
@@ -294,8 +328,13 @@ class extends Component {
                 },
             });
             if(error) {
-                setTimeout(() => $wire.set('paymentProcessing', false), 1000)
+                setTimeout(() => $wire.set('paymentProcessing', false), 300)
                 console.error(error);
+                Livewire.dispatch('toast', {
+                    type: 'error',
+                    title: 'Payment Error!',
+                    message: error.message,
+                })
             }
         }
 
