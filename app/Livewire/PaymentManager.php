@@ -16,11 +16,14 @@ class PaymentManager extends Component
     public $description = '';
     public $amount = '';
     public $currency = 'DKK';
+    public $is_paid = false;
     public $editingPaymentId = null;
     public $showForm = false;
     public $search = '';
     public $showDeleteConfirmation = false;
     public $paymentToDelete = null;
+    public $showViewModal = false;
+    public $viewingPayment = null;
 
     protected $rules = [
         'name' => 'required|string|max:255',
@@ -54,9 +57,12 @@ class PaymentManager extends Component
         $this->description = '';
         $this->amount = '';
         $this->currency = 'DKK';
+        $this->is_paid = false;
         $this->editingPaymentId = null;
         $this->showDeleteConfirmation = false;
         $this->paymentToDelete = null;
+        $this->showViewModal = false;
+        $this->viewingPayment = null;
         $this->resetErrorBag();
     }
 
@@ -72,6 +78,7 @@ class PaymentManager extends Component
                 'description' => $this->description,
                 'amount' => $this->amount,
                 'currency' => $this->currency,
+                'is_paid' => $this->is_paid,
             ]);
             $this->dispatch('toast', [
                 'type' => 'success',
@@ -85,6 +92,7 @@ class PaymentManager extends Component
                 'description' => $this->description,
                 'amount' => $this->amount,
                 'currency' => $this->currency,
+                'is_paid' => $this->is_paid,
             ]);
             $this->dispatch('toast', [
                 'type' => 'success',
@@ -105,6 +113,7 @@ class PaymentManager extends Component
         $this->description = $payment->description;
         $this->amount = $payment->amount;
         $this->currency = $payment->currency;
+        $this->is_paid = $payment->is_paid;
         $this->showForm = true;
     }
 
@@ -132,6 +141,31 @@ class PaymentManager extends Component
             $this->showDeleteConfirmation = false;
             $this->paymentToDelete = null;
         }
+    }
+
+    public function togglePaymentStatus($paymentId)
+    {
+        $payment = Payment::find($paymentId);
+        $payment->update(['is_paid' => !$payment->is_paid]);
+        
+        $status = $payment->is_paid ? 'paid' : 'unpaid';
+        $this->dispatch('toast', [
+            'type' => 'success',
+            'title' => 'Status Updated!',
+            'message' => "Payment marked as {$status}!"
+        ]);
+    }
+
+    public function viewPayment($paymentId)
+    {
+        $this->viewingPayment = Payment::find($paymentId);
+        $this->showViewModal = true;
+    }
+
+    public function closeViewModal()
+    {
+        $this->showViewModal = false;
+        $this->viewingPayment = null;
     }
 
     #[Layout('layouts.app', ['page' => 'payments'])]

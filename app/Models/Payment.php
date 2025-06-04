@@ -12,9 +12,11 @@ class Payment extends Model
         'description',
         'amount',
         'currency',
+        'is_paid',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'is_paid' => 'boolean',
     ];
 }

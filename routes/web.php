@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', fn() => abort(404));
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
-    Route::view('layout', 'index');
     Route::view('dashboard', 'dashboard')->name('dashboard');
     Route::get('payments', PaymentManager::class)->name('payments');
 });

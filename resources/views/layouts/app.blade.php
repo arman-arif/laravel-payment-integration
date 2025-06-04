@@ -6,6 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
     <title> {{ config('app.name') }} - Billing & Payment </title>
 
+    <link rel="favicon" href="{{ logo('icon') }}" type="image/png">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
@@ -18,7 +20,16 @@
     :class="{'dark bg-gray-900': darkMode === true}"
 >
 
-{{-- <include src="./partials/preloader.html"></include> --}}
+<div
+  x-show="loaded"
+  x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 100)})"
+  class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black"
+>
+  <div
+    class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"
+  ></div>
+</div>
+
 
 <div class="flex h-screen overflow-hidden">
 

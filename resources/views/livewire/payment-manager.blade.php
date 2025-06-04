@@ -204,6 +204,11 @@
                                 </th>
                                 <th class="px-5 py-3 sm:px-6">
                                     <div class="flex items-center">
+                                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Status</p>
+                                    </div>
+                                </th>
+                                <th class="px-5 py-3 sm:px-6">
+                                    <div class="flex items-center">
                                         <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Description</p>
                                     </div>
                                 </th>
@@ -244,6 +249,19 @@
                                     </td>
                                     <td class="px-5 py-4 sm:px-6">
                                         <div class="flex items-center">
+                                            <button
+                                                wire:click="togglePaymentStatus({{ $payment->id }})"
+                                                class="rounded-full px-3 py-1 text-xs font-medium transition-colors duration-200 {{ $payment->is_paid 
+                                                    ? 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50' 
+                                                    : 'bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50' }}"
+                                                title="Click to toggle payment status"
+                                            >
+                                                {{ $payment->is_paid ? 'Paid' : 'Unpaid' }}
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4 sm:px-6">
+                                        <div class="flex items-center">
                                             <p class="text-gray-500 text-sm dark:text-gray-400 truncate max-w-xs">
                                                 {{ Str::limit($payment->description, 50) }}
                                             </p>
@@ -251,6 +269,12 @@
                                     </td>
                                     <td class="px-5 py-4 sm:px-6">
                                         <div class="flex items-center gap-2">
+                                            <button
+                                                wire:click="viewPayment({{ $payment->id }})"
+                                                class="rounded-lg bg-green-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-600 focus:outline-hidden focus:ring-2 focus:ring-green-500/20"
+                                            >
+                                                View
+                                            </button>
                                             <button
                                                 wire:click="edit({{ $payment->id }})"
                                                 class="rounded-lg bg-blue-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-600 focus:outline-hidden focus:ring-2 focus:ring-blue-500/20"
@@ -268,7 +292,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-5 py-8 text-center">
+                                    <td colspan="7" class="px-5 py-8 text-center">
                                         <div class="flex flex-col items-center">
                                             <svg class="mb-4 h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -290,6 +314,133 @@
     @if($payments->hasPages())
         <div class="mt-6">
             {{ $payments->links() }}
+        </div>
+    @endif
+
+    <!-- View Payment Modal -->
+    @if($showViewModal && $viewingPayment)
+        <div class="fixed inset-0 z-99999 flex items-center justify-center bg-gray-900/50 p-4">
+            <div class="w-full max-w-2xl rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+                <div class="mb-6 flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                        Payment Details
+                    </h3>
+                    <button
+                        wire:click="closeViewModal"
+                        class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    >
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <!-- Name -->
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                Name
+                            </label>
+                            <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90">
+                                {{ $viewingPayment->name }}
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                Email
+                            </label>
+                            <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90">
+                                {{ $viewingPayment->email }}
+                            </div>
+                        </div>
+
+                        <!-- Amount -->
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                Amount
+                            </label>
+                            <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90">
+                                ${{ number_format($viewingPayment->amount, 2) }}
+                            </div>
+                        </div>
+
+                        <!-- Currency -->
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                Currency
+                            </label>
+                            <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90">
+                                {{ $viewingPayment->currency }}
+                            </div>
+                        </div>
+
+                        <!-- Status -->
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                Payment Status
+                            </label>
+                            <div class="flex items-center">
+                                <span class="rounded-full px-3 py-1 text-sm font-medium {{ $viewingPayment->is_paid 
+                                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
+                                    : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                    {{ $viewingPayment->is_paid ? 'Paid' : 'Unpaid' }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Created Date -->
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                Created Date
+                            </label>
+                            <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90">
+                                {{ $viewingPayment->created_at->format('M d, Y \a\t g:i A') }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Description
+                        </label>
+                        <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90 min-h-[100px]">
+                            {{ $viewingPayment->description }}
+                        </div>
+                    </div>
+
+                    <!-- Updated Date (if different from created) -->
+                    @if($viewingPayment->updated_at->ne($viewingPayment->created_at))
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                Last Updated
+                            </label>
+                            <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90">
+                                {{ $viewingPayment->updated_at->format('M d, Y \a\t g:i A') }}
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Modal Actions -->
+                <div class="mt-6 flex justify-end gap-3">
+                    <button
+                        wire:click="edit({{ $viewingPayment->id }})"
+                        class="rounded-lg bg-blue-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-600 focus:outline-hidden focus:ring-3 focus:ring-blue-500/10"
+                    >
+                        Edit Payment
+                    </button>
+                    <button
+                        wire:click="closeViewModal"
+                        class="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-hidden focus:ring-3 focus:ring-gray-500/10 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
         </div>
     @endif
 

@@ -19,6 +19,7 @@ class PaymentSeeder extends Seeder
                 'description' => 'Monthly subscription payment for premium service',
                 'amount' => 99.99,
                 'currency' => 'USD',
+                'is_paid' => true,
             ],
             [
                 'name' => 'Jane Smith',
@@ -26,6 +27,7 @@ class PaymentSeeder extends Seeder
                 'description' => 'One-time purchase for digital product',
                 'amount' => 49.99,
                 'currency' => 'USD',
+                'is_paid' => false,
             ],
             [
                 'name' => 'Bob Johnson',
@@ -33,6 +35,7 @@ class PaymentSeeder extends Seeder
                 'description' => 'Annual membership fee',
                 'amount' => 299.99,
                 'currency' => 'USD',
+                'is_paid' => true,
             ],
             [
                 'name' => 'Alice Brown',
@@ -40,6 +43,7 @@ class PaymentSeeder extends Seeder
                 'description' => 'Consultation service payment',
                 'amount' => 150.00,
                 'currency' => 'EUR',
+                'is_paid' => false,
             ],
             [
                 'name' => 'Charlie Wilson',
@@ -47,6 +51,7 @@ class PaymentSeeder extends Seeder
                 'description' => 'Software license renewal',
                 'amount' => 199.99,
                 'currency' => 'GBP',
+                'is_paid' => true,
             ],
         ];
 
