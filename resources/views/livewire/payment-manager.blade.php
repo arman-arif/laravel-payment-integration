@@ -193,7 +193,7 @@
                                 <th class="px-5 py-3 sm:px-6">
                                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400">S/N</p>
                                 </th>
-                                <th class="px-5 py-3 sm:px-6">
+                                <th class="px-5 py-3 sm:px-6 text-left">
                                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Customer</p>
                                 </th>
                                 <th class="px-5 py-3 sm:px-6">
@@ -205,7 +205,7 @@
                                 <th class="px-5 py-3 sm:px-6">
                                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Status</p>
                                 </th>
-                                <th class="px-5 py-3 sm:px-6">
+                                <th class="px-5 py-3 sm:px-6 text-left">
                                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Description</p>
                                 </th>
                                 <th class="px-5 py-3 sm:px-6">
@@ -217,10 +217,10 @@
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                         @forelse($payments as $payment)
                             <tr>
-                                <td class="px-5 py-4 sm:px-6 text-gray-500 text-sm dark:text-gray-400">
+                                <td class="px-5 py-4 sm:px-6 text-gray-500 text-sm dark:text-gray-400 text-center">
                                     {{ $loop->index + $payments->firstItem() }}
                                 </td>
-                                <td class="px-5 py-4 sm:px-6">
+                                <td class="px-5 py-4 sm:px-6 text-left">
                                     <span class="block font-medium text-gray-800 text-sm dark:text-white/90">
                                         {{ $payment->name }}
                                     </span>
@@ -248,7 +248,7 @@
                                     </button>
                                 </td>
                                 <td class="px-5 py-4 sm:px-6 group/desc relative overflow-visible">
-                                    <div class="hidden group-hover/desc:block cursor-default absolute z-999 bottom-1/2 left-0 translate-y-1/2 min-w-120px translate bg-white shadow-sm px-2 py-1 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300 text-center">
+                                    <div class="hidden group-hover/desc:block cursor-default absolute z-999 bottom-1/2 left-0 translate-y-1/2 min-w-120px translate bg-white shadow-md border rounded px-2 py-1 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300 w-full">
                                         {{ $payment->description }}
                                     </div>
                                     <p class="text-gray-500 text-sm dark:text-gray-400 truncate max-w-xs cursor-default">

@@ -90,6 +90,10 @@ class extends Component {
         $paymentIntent = $stripe->retrivePaymentIntent($paymentIntentId);
 
         if (in_array($paymentIntent['status'], ['succeeded', 'processing'])) {
+            $this->payment->payment_gateway = 'stripe';
+            $this->payment->payment_id = $paymentIntentId;
+            $this->payment->saveQuietly();
+
             $this->redirectRoute('stripe.confirm', [
                 'payment_intent' => $paymentIntent['id'],
                 'payment_intent_client_secret' =>  $paymentIntent['client_secret'],
