@@ -196,8 +196,9 @@ class extends Component {
 
                     @if($stripeCardReady)
                         <button
-                            class="items-center gap-2 rounded-lg bg-sky-600 text-white px-4 py-2 text-lg font-medium shadow-theme-xs transition hover:bg-sky-700  dark:hover:bg-sky-500"
+                            class="items-center gap-2 rounded-lg bg-sky-600 text-white px-4 py-2 text-lg font-medium shadow-theme-xs transition hover:bg-sky-700 dark:hover:bg-sky-500 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
                             wire:click="$dispatch('stripe.confirmConfirmPayment')"
+                            @disabled($paymentProcessing)
                         >
                             @if($paymentProcessing)
                                 <x-loading-spinner color="white" size="sm"> Processing Payment... </x-loading-spinner>
@@ -221,24 +222,27 @@ class extends Component {
 <script>
     (function () {
 
+        const darkMode = () => JSON.parse(localStorage.getItem('darkMode'));
+
         async function initStripeCard() {
             const stripe = Stripe($wire.stripKey);
 
             const paymentIntent = await $wire.getStripePaymentIntent();
 
-            const elementAppearance = {
-                theme: 'stripe',
+            const elementAppearance = () => ({
+                theme: darkMode() ? 'night' : 'stripe',
                 labels: 'floating',
                 variables: {
                     borderRadius: '8px',
                     colorPrimary: '#0084d1',
+                    colorBackground: darkMode() ? '#202735' : '#ffffff'
                 }
-            };
+            });
 
             const elements = stripe.elements({
                 clientSecret: paymentIntent.clientSecret,
                 loader: 'always',
-                appearance: elementAppearance
+                appearance: elementAppearance(),
             });
 
             const customer = await $wire.getCustomer();
@@ -255,6 +259,12 @@ class extends Component {
             const paymentElement = elements.create('payment', elementOptions);
 
             paymentElement.mount('#stripe-payment-element');
+
+            Livewire.on('dark-mode', debounce(({darkMode}) => {
+                elements.update({
+                    appearance: elementAppearance()
+                });
+            }, 100));
 
             Livewire.on('stripe.confirmConfirmPayment', debounce(() => {
                 $wire.updatePayment(paymentIntent.id);

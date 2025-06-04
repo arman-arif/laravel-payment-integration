@@ -22,5 +22,5 @@ Route::middleware('auth')->group(function () {
 require __DIR__ . '/auth.php';
 
 Route::get('stripe/confirm-payment', [StripeController::class, 'confirm'])->name('stripe.confirm');
-Route::get('payment-success/{payment}', [IndexController::class, 'paymentSuccess'])->name('payment.success');;
-Volt::route('{payment}', 'payment-process')->name('payment');
+Route::get('payment/{payment}/success', [IndexController::class, 'paymentSuccess'])->name('payment.success');;
+Volt::route('payment/{payment}', 'payment-process')->name('payment');
