@@ -19,9 +19,9 @@
 
                 <x-sidebar.menu-item
                     name="Payments"
-                    href="#"
+                    href="{{ route('payments') }}"
                     :active-pages="['payments']"
-                    icon="pages"
+                    icon="payments"
                 />
 
                 <x-sidebar.menu-item

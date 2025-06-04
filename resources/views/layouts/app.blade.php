@@ -7,6 +7,7 @@
     <title> {{ config('app.name') }} - Billing & Payment </title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 </head>
 <body
     x-data="{ page: '{{ $page }}', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
@@ -41,5 +42,7 @@
         </main>
     </div>
 </div>
+
+@livewireScripts
 </body>
 </html>
