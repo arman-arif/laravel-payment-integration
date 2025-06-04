@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\IndexController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StripeController;
 use App\Livewire\PaymentManager;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
@@ -19,4 +21,6 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__ . '/auth.php';
 
-Volt::route('payment/{payment}', 'payment-process')->name('payment');
+Route::get('stripe/confirm-payment', [StripeController::class, 'confirm'])->name('stripe.confirm');
+Route::get('payment-success/{payment}', [IndexController::class, 'paymentSuccess'])->name('payment.success');;
+Volt::route('{payment}', 'payment-process')->name('payment');

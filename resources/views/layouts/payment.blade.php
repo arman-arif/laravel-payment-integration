@@ -32,18 +32,9 @@
 
 
 <div class="flex h-screen overflow-hidden">
-
-    <div class="relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto">
-        <div
-            @click="sidebarToggle = false"
-            :class="sidebarToggle ? 'block lg:hidden' : 'hidden'"
-            class="fixed w-full h-screen z-9 bg-gray-900/50"
-        ></div>
-
+    <div class="flex flex-col flex-1 overflow-x-hidden overflow-y-auto">
         <main>
             <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
-                {{ $header ?? '' }}
-
                 {{ $slot }}
             </div>
         </main>
@@ -51,6 +42,8 @@
 </div>
 
 <x-toast-container />
+
+@stack('scripts')
 
 @livewireScripts
 </body>

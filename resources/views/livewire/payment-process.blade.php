@@ -1,0 +1,305 @@
+<?php
+
+use App\Models\Payment;
+use App\Services\StripeService;
+use Livewire\Attributes\Layout;
+use Livewire\Volt\Component;
+
+new
+#[Layout('layouts.payment')]
+class extends Component {
+    public Payment $payment;
+
+    public $stripKey = null;
+
+    public $currentGateway = null;
+    public $defaultGateway = 'stripe';
+    public $currency = null;
+
+    public $stripeCardReady = false;
+    public $showLoader = false;
+
+    public function mount()
+    {
+        $this->stripKey = config('stripe.public_key');
+        $this->currency = $this->payment->currency;
+
+        if ($this->payment->is_paid) {
+            $this->redirectRoute('payment.success', $payment->id);
+            return;
+        }
+
+        $paymentIntentId = $this->payment->payment_meta->payment_intent_id ?? null;
+        if ($paymentIntentId) {
+            $this->checkIfPaymentComplete($paymentIntentId);
+        }
+    }
+
+    public function getCustomer()
+    {
+        return $this->payment->only(['name', 'email']);
+    }
+
+    public function getStripePaymentIntent(): array
+    {
+        $paymentIntentId = $this->payment->payment_meta->payment_intent_id ?? null;
+
+        $stripe = new StripeService();
+
+        if ($paymentIntentId) {
+            $intent = $stripe->retrivePaymentIntent($paymentIntentId);
+
+            if (isset($intent['client_secret'])) {
+                return [
+                    'id' => $intent['id'],
+                    'clientSecret' => $intent['client_secret'],
+                ];
+            }
+        }
+
+        $intent = $stripe->createPaymentIntent(
+            $this->payment->amount,
+            $this->payment->currency,
+            $this->payment->description,
+            [
+                'payment_id' => $this->payment->id,
+                'customer_name' => $this->payment->name,
+                'customer_email' => $this->payment->email,
+            ]
+        );
+
+        $this->payment->payment_gateway = 'stripe';
+        $this->payment->payment_meta = [
+            'payment_intent_id' => $intent['id'],
+            'client_secret' => $intent['client_secret']
+        ];
+        $this->payment->saveQuietly();
+
+        return [
+            'id' => $intent['id'],
+            'clientSecret' => $intent['client_secret']
+        ];
+    }
+
+    public function checkIfPaymentComplete($paymentIntentId)
+    {
+        $stripe = new StripeService();
+        $paymentIntent = $stripe->retrivePaymentIntent($paymentIntentId);
+
+        if (in_array($paymentIntent['status'], ['succeeded', 'processing'])) {
+            $this->redirectRoute('stripe.confirm', [
+                'payment_intent' => $paymentIntent['id'],
+                'payment_intent_client_secret' =>  $paymentIntent['client_secret'],
+                'redirect_status' => $paymentIntent['status'],
+            ]);
+        }
+    }
+
+    public function updatePayment($paymentId)
+    {
+        $this->payment->payment_id = $paymentId;
+        $this->payment->saveQuietly();
+    }
+
+    public function setGateway($method): void
+    {
+        $this->currentGateway = match ($method) {
+            'card', => 'stripe',
+            default => null
+        };
+
+        $this->dispatch('changeGateway', gateway: $this->currentGateway);
+    }
+
+}; ?>
+
+<div
+    class="max-w-[750px] mx-auto my-20"
+    x-data="{ currentGateway: @entangle('currentGateway').live }"
+>
+    <div
+        class="min-h-60 rounded-2xl border border-gray-200 bg-white px-7 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12">
+        <div class="mx-auto w-full max-w-[700px]">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="w-full md:w-4/12">
+                    <div class="mb-4">
+                        <h2 class="font-semibold text-xl text-red-700">PHD CAR RENT LTD.</h2>
+                        <p class="text-gray-500">Payment Portal</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="text-sm text-gray-400">Customer</div>
+                        <div class="text-truncate">
+                            <p class="font-semibold text-md">{{ $payment->name }}</p>
+                            <p class="text-gray-600">{{ $payment->email }}</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="text-sm text-gray-400">Payable Amount</div>
+                        <div
+                            class="text-3xl text-sky-600 font-semibold">{{number_format($payment->amount, 2)}} {{ $payment->currency }}</div>
+                    </div>
+                </div>
+                <div
+                    x-data="{
+                        showLoader: @entangle('showLoader').live,
+                        stripeCardReady: @entangle('stripeCardReady').live,
+                        showSelectMessage: true,
+                        timeout: null,
+                    }"
+                    class="w-full md:w-8/12"
+                    x-effect="
+                        if(!showLoader && !stripeCardReady) {
+                            clearTimeout(timeout);
+                            timeout = setTimeout(() => {
+                                showSelectMessage = true;
+                            }, 500);
+                        } else {
+                            clearTimeout(timeout);
+                            timeout = setTimeout(() => {
+                                showSelectMessage = false;
+                            }, 500);
+                        }
+                    "
+                >
+                    <h3 class="mb-4 text-xl font-semibold text-gray-800 dark:text-white/90 uppercase text-center">
+                        Complete Payment
+                    </h3>
+
+                    <div class="mb-4">
+                        <button
+                            class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-semibold shadow-theme-xs ring-1 transition hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]"
+                            :class="currentGateway === 'stripe' ? 'ring-sky-600 text-sky-600' : 'text-gray-600 ring-gray-300 dark:ring-gray-700'"
+                            wire:click="setGateway('card')"
+                            @click="showLoader = true; showSelectMessage = false;"
+                            @disabled($stripeCardReady)
+                        >
+                            Credit/Debit Card
+                        </button>
+                    </div>
+
+                    <div wire:ignore>
+                        <div class="w-full mb-4" id="stripe-payment-element"></div>
+                    </div>
+
+                    <div class="flex justify-center items-center min-h-40 mb-8" x-show="showLoader" x-cloak>
+                        <x-loading-spinner size="xl"/>
+                    </div>
+
+                    @if($stripeCardReady)
+                        <button
+                            class="items-center gap-2 rounded-lg bg-sky-600 text-white px-4 py-2 text-lg font-medium shadow-theme-xs transition hover:bg-sky-700  dark:hover:bg-sky-500"
+                            wire:click="$dispatch('stripe.confirmConfirmPayment')"
+                        >
+                            Pay {{ $payment->getAmountString() }}
+                        </button>
+                    @endif
+
+                    <div class="my-10 text-center text-gray-500" x-show="showSelectMessage" x-cloak>
+                        Select a payment method to continue.
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@script
+<script>
+    (function () {
+
+        async function initStripeCard() {
+            const stripe = Stripe($wire.stripKey);
+
+            const paymentIntent = await $wire.getStripePaymentIntent();
+
+            const elementAppearance = {
+                theme: 'stripe',
+                variables: {
+                    borderRadius: '8px',
+                }
+            };
+
+            const elements = stripe.elements({
+                clientSecret: paymentIntent.clientSecret,
+                loader: 'always',
+                appearance: elementAppearance
+            });
+
+            const customer = await $wire.getCustomer();
+
+            const elementOptions = {
+                layout: 'tabs',
+                defaultValues: {
+                    billingDetails: {
+                        name: customer.name,
+                        email: customer.email,
+                    }
+                }
+            };
+            const paymentElement = elements.create('payment', elementOptions);
+
+            paymentElement.mount('#stripe-payment-element');
+
+            Livewire.on('stripe.confirmConfirmPayment', debounce(() => {
+                $wire.updatePayment(paymentIntent.id);
+                confirmStripeCard(stripe, elements);
+                console.clear();
+            }, 300));
+
+            paymentElement.on('loaderstart', function(event) {
+                $wire.set('showLoader', false);
+                console.clear();
+            });
+
+            paymentElement.on('ready', function(event) {
+                $wire.set('stripeCardReady', true);
+                console.clear();
+            });
+
+            console.log('stripe initialized');
+        }
+
+        async function confirmStripeCard(stripe, elements) {
+            const { error } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: '{{ route('stripe.confirm') }}',
+                },
+            });
+            if(error) {
+                console.error(error);
+            }
+        }
+
+        const initialized = {};
+        Livewire.on('changeGateway', ({gateway}) => {
+            if (gateway === 'stripe') {
+                if(initialized.current===gateway) return;
+                initialized.current = gateway;
+                setTimeout(debounce(() => {
+                    initStripeCard();
+                }, 300), 500);
+            }
+        });
+
+        // debounce function
+        function debounce(fn, delay) {
+            let timer;
+            return function (...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    fn.apply(this, args);
+                }, delay);
+            };
+        }
+
+    })()
+</script>
+@endscript
+
+@push('scripts')
+    <script src="https://js.stripe.com/basil/stripe.js"></script>
+@endpush

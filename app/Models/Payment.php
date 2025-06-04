@@ -22,11 +22,20 @@ class Payment extends Model
         'paid_at',
         'payment_id',
         'payment_gateway',
+        'payment_meta',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
         'is_paid' => 'boolean',
         'paid_at' => 'datetime',
+        'payment_meta' => 'object',
     ];
+
+    public function getAmountString()
+    {
+        return number_format($this->amount, 2)." $this->currency";
+    }
+
+
 }
