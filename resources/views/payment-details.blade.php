@@ -22,22 +22,16 @@ mount(function (Payment $payment, StripeService $stripe) {
     <div>
         <div class="mb-4 border p-4 rounded-lg">
             Payment Model: <code class="px-3">{{ $payment->is_paid ? 'Paid' : 'Unpaid' }}</code>
-            <code>
-                <pre>{{ json_encode($payment, JSON_PRETTY_PRINT) }}</pre>
-            </code>
+            @dump($payment->toArray())
         </div>
         <div class="mb-4 border p-4 rounded-lg">
             Payment Intent: <code class="px-3">{{ $paymentIntent['status'] }}</code>
-            <code>
-                <pre>{{ json_encode($paymentIntent, JSON_PRETTY_PRINT) }}</pre>
-            </code>
+            @dump($paymentIntent)
         </div>
         @if($latestCharge)
             <div class="mb-4 border p-4 rounded-lg">
                 Latest Charge: <code class="px-3">{{ $latestCharge['status'] }}</code>
-                <code>
-                    <pre>{{ json_encode($latestCharge, JSON_PRETTY_PRINT) }}</pre>
-                </code>
+                @dump($latestCharge)
             </div>
         @endif
     </div>

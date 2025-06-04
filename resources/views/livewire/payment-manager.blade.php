@@ -38,7 +38,7 @@
 
     <!-- Form Modal -->
     @if($showForm)
-        <div class="fixed inset-0 z-99999 flex items-center justify-center bg-gray-900/50 p-4">
+        <div class="fixed inset-0 z-999999 flex items-center justify-center bg-gray-900/50 p-4">
             <div
                 class="w-full max-w-2xl rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
                 <div class="mb-6 flex items-center justify-between">
@@ -318,7 +318,7 @@
 
     <!-- View Payment Modal -->
     @if($showViewModal && $viewingPayment)
-        <div class="fixed inset-0 z-99999 flex items-center justify-center bg-gray-900/50 p-4">
+        <div class="fixed inset-0 z-999999 flex items-center justify-center bg-gray-900/50 p-4">
             <div
                 class="w-full max-w-2xl rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
                 <div class="mb-6 flex items-center justify-between">
@@ -543,7 +543,7 @@
             x-data="{ show: true }"
             x-show="show"
             x-cloak
-            class="fixed inset-0 z-99999 overflow-y-auto"
+            class="fixed inset-0 z-999999 overflow-y-auto"
             aria-labelledby="modal-title"
             role="dialog"
             aria-modal="true"
