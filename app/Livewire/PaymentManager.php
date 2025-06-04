@@ -17,6 +17,9 @@ class PaymentManager extends Component
     public $amount = '';
     public $currency = 'DKK';
     public $is_paid = false;
+    public $paid_at = '';
+    public $payment_id = '';
+    public $payment_gateway = '';
     public $editingPaymentId = null;
     public $showForm = false;
     public $search = '';
@@ -31,6 +34,8 @@ class PaymentManager extends Component
         'description' => 'required|string',
         'amount' => 'required|numeric|min:0.01',
         'currency' => 'required|string|size:3',
+        'payment_id' => 'nullable|string|max:255',
+        'payment_gateway' => 'nullable|string|max:255',
     ];
 
     public function updatingSearch()
@@ -58,6 +63,9 @@ class PaymentManager extends Component
         $this->amount = '';
         $this->currency = 'DKK';
         $this->is_paid = false;
+        $this->paid_at = '';
+        $this->payment_id = '';
+        $this->payment_gateway = '';
         $this->editingPaymentId = null;
         $this->showDeleteConfirmation = false;
         $this->paymentToDelete = null;
@@ -71,7 +79,7 @@ class PaymentManager extends Component
         $this->validate();
 
         if ($this->editingPaymentId) {
-            $payment = Payment::find($this->editingPaymentId);
+            $payment = Payment::where('id', $this->editingPaymentId)->first();
             $payment->update([
                 'name' => $this->name,
                 'email' => $this->email,
@@ -79,6 +87,9 @@ class PaymentManager extends Component
                 'amount' => $this->amount,
                 'currency' => $this->currency,
                 'is_paid' => $this->is_paid,
+                'paid_at' => $this->is_paid && !$payment->paid_at ? now() : ($this->is_paid ? $payment->paid_at : null),
+                'payment_id' => $this->payment_id,
+                'payment_gateway' => $this->payment_gateway,
             ]);
             $this->dispatch('toast', [
                 'type' => 'success',
@@ -93,8 +104,9 @@ class PaymentManager extends Component
                 'amount' => $this->amount,
                 'currency' => $this->currency,
                 'is_paid' => $this->is_paid,
+                'paid_at' => $this->is_paid ? now() : null,
             ]);
-            $this->dispatch('toast', [
+            $this->dispatch('toast', ...[
                 'type' => 'success',
                 'title' => 'Success!',
                 'message' => 'Payment created successfully!'
@@ -104,9 +116,9 @@ class PaymentManager extends Component
         $this->hideForm();
     }
 
-    public function edit($paymentId)
+    public function edit($id)
     {
-        $payment = Payment::find($paymentId);
+        $payment = Payment::where('id', $id)->first();
         $this->editingPaymentId = $payment->id;
         $this->name = $payment->name;
         $this->email = $payment->email;
@@ -114,12 +126,15 @@ class PaymentManager extends Component
         $this->amount = $payment->amount;
         $this->currency = $payment->currency;
         $this->is_paid = $payment->is_paid;
+        $this->payment_id = $payment->payment_id ?? '';
+        $this->payment_gateway = $payment->payment_gateway ?? '';
         $this->showForm = true;
+        $this->showViewModal = false;
     }
 
-    public function confirmDelete($paymentId)
+    public function confirmDelete($id)
     {
-        $this->paymentToDelete = $paymentId;
+        $this->paymentToDelete = $id;
         $this->showDeleteConfirmation = true;
     }
 
@@ -132,7 +147,7 @@ class PaymentManager extends Component
     public function delete()
     {
         if ($this->paymentToDelete) {
-            Payment::find($this->paymentToDelete)->delete();
+            Payment::where('id', $this->paymentToDelete)->delete();
             $this->dispatch('toast', [
                 'type' => 'success',
                 'title' => 'Deleted!',
@@ -143,22 +158,26 @@ class PaymentManager extends Component
         }
     }
 
-    public function togglePaymentStatus($paymentId)
+    public function togglePaymentStatus($id)
     {
-        $payment = Payment::find($paymentId);
-        $payment->update(['is_paid' => !$payment->is_paid]);
-        
+        $payment = Payment::where('id', $id)->first();
+        $newStatus = !$payment->is_paid;
+        $payment->update([
+            'is_paid' => $newStatus,
+            'paid_at' => $newStatus ? now() : null
+        ]);
+
         $status = $payment->is_paid ? 'paid' : 'unpaid';
-        $this->dispatch('toast', [
+        $this->dispatch('toast', ...[
             'type' => 'success',
             'title' => 'Status Updated!',
             'message' => "Payment marked as {$status}!"
         ]);
     }
 
-    public function viewPayment($paymentId)
+    public function viewPayment($id)
     {
-        $this->viewingPayment = Payment::find($paymentId);
+        $this->viewingPayment = Payment::where('id', $id)->first();
         $this->showViewModal = true;
     }
 

@@ -1,11 +1,11 @@
-<div 
-    x-data="toastManager()" 
+<div
+    x-data="toastManager()"
     @toast.window="addToast($event.detail)"
-    class="fixed top-0 right-0 z-50 flex flex-col items-end space-y-4 p-6"
+    class="fixed top-0 right-0 z-999999 flex flex-col items-end space-y-4 p-6"
     wire:ignore
 >
     <template x-for="toast in toasts" :key="toast.id">
-        <div 
+        <div
             x-show="toast.show"
             x-transition:enter="transform ease-out duration-300 transition"
             x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
@@ -13,7 +13,7 @@
             x-transition:leave="transition ease-in duration-100"
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
-            class="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5"
+            class="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg shadow-lg ring-1 ring-black/5"
             :class="{
                 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800': toast.type === 'success',
                 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800': toast.type === 'error',
@@ -41,7 +41,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zm-9-3.75h.008v.008H12V8.25z" />
                         </svg>
                     </div>
-                    <div class="ml-3 w-0 flex-1 pt-0.5">
+                    <div class="ml-3 w-0 flex-1 pt-0.5 min-w-[230px]">
                         <p x-show="toast.title" x-text="toast.title" class="text-sm font-medium"
                            :class="{
                                'text-green-800 dark:text-green-200': toast.type === 'success',
@@ -58,8 +58,8 @@
                            }"></p>
                     </div>
                     <div class="ml-4 flex flex-shrink-0">
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             class="inline-flex rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             @click="removeToast(toast.id)"
                         >
@@ -80,7 +80,7 @@ function toastManager() {
     return {
         toasts: [],
         nextId: 1,
-        
+
         addToast(toast) {
             const id = this.nextId++;
             const newToast = {
@@ -91,15 +91,15 @@ function toastManager() {
                 message: toast.message || '',
                 duration: toast.duration || 5000
             };
-            
+
             this.toasts.push(newToast);
-            
+
             // Auto remove after duration
             setTimeout(() => {
                 this.removeToast(id);
             }, newToast.duration);
         },
-        
+
         removeToast(id) {
             const index = this.toasts.findIndex(toast => toast.id === id);
             if (index > -1) {

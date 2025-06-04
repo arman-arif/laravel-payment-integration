@@ -31,7 +31,7 @@
             </button>
             <!-- Hamburger Toggle BTN -->
 
-            <a href="/dashboard" class="lg:hidden">
+            <a href="{{ route('dashboard') }}" class="lg:hidden">
                 <img class="dark:hidden h-12" src="{{  logo('light') }}" alt="Logo"/>
                 <img class="hidden dark:block h-12" src="{{  logo('dark') }}" alt="Logo"/>
             </a>

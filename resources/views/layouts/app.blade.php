@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
     <title> {{ config('app.name') }} - Billing & Payment </title>
 
-    <link rel="favicon" href="{{ logo('icon') }}" type="image/png">
+    <link rel="icon" href="{{ logo('icon') }}" type="image/png">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles

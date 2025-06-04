@@ -1,5 +1,5 @@
 @props([
-    'barndUrl' => '/dashboard',
+    'barndUrl' => route('dashboard'),
     'logoLight' => logo('light'),
     'logoDark' => logo('dark'),
     'logoIcon' => logo('icon')

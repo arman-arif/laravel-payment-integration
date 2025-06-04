@@ -8,7 +8,7 @@ Route::get('/', fn() => abort(404));
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
-    Route::get('payments', PaymentManager::class)->name('payments');
+    Route::get('dashboard/payments', PaymentManager::class)->name('payments');
 });
 
 Route::middleware('auth')->group(function () {
@@ -17,3 +17,5 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+
+Route::get('payment/{payment}', PaymentManager::class)->name('payment');
