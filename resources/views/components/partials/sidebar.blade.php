@@ -18,15 +18,15 @@
                 />
 
                 <x-sidebar.menu-item
-                    name="Calendar"
+                    name="Payments"
                     href="#"
-                    :active-pages="['calendar']"
-                    icon="calendar"
+                    :active-pages="['payments']"
+                    icon="pages"
                 />
 
                 <x-sidebar.menu-item
-                    name="Forms"
-                    :active-pages="['formElements', 'formLayout', 'proFormElements', 'proFormLayout']"
+                    name="Transactions"
+                    :active-pages="['transactions']"
                     icon="forms"
                 />
             </x-sidebar.menu-group>
