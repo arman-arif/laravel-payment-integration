@@ -4,18 +4,18 @@
     'icon',
     'hasDropdown' => false,
     'activePages' => [],
-    'preventClick' => false
+    'preventClick' => false,
+    'page',
+    'selected'
 ])
 
 @php
 $isActive = in_array($page ?? '', $activePages) || (isset($selected) && $selected === $name);
-$clickHandler = $hasDropdown || $preventClick ? "@click.prevent=\"selected = (selected === '{$name}' ? '':'{$name}')\"" : '';
 @endphp
 
 <li>
     <a
         href="{{ $href }}"
-        {!! $clickHandler !!}
         class="menu-item group"
         :class="(selected === '{{ $name }}') || {{ $isActive ? 'true' : 'false' }} ? 'menu-item-active' : 'menu-item-inactive'"
     >

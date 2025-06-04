@@ -8,13 +8,14 @@
         class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar"
     >
         <!-- Sidebar Menu -->
-        <nav x-data="{selected: $persist('Dashboard')}">
+        <nav x-data="{selected: ''}">
             <x-sidebar.menu-group title="MENU">
                 <x-sidebar.menu-item
                     name="Dashboard"
                     :active-pages="['dashboard']"
                     :prevent-click="true"
                     icon="dashboard"
+                    :page="$page"
                 />
 
                 <x-sidebar.menu-item
@@ -22,12 +23,14 @@
                     href="{{ route('payments') }}"
                     :active-pages="['payments']"
                     icon="payments"
+                    :page="$page"
                 />
 
                 <x-sidebar.menu-item
                     name="Transactions"
                     :active-pages="['transactions']"
                     icon="forms"
+                    :page="$page"
                 />
             </x-sidebar.menu-group>
         </nav>
