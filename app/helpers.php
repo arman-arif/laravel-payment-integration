@@ -11,3 +11,19 @@ if (!function_exists('logo')) {
         };
     }
 }
+
+
+if (!function_exists('user')) {
+    function user($parameter = null)
+    {
+        if (!auth()->check()) {
+            return null;
+        }
+        $user = auth()->user();
+        if (!$parameter) {
+            return auth()->user();
+        }
+
+        return $user->{$parameter} ?? null;
+    }
+}

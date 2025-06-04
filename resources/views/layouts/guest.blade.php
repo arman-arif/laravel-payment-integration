@@ -51,12 +51,12 @@
                             <!-- Grid pattern can be added here -->
                         </div>
 
-                        <div class="flex flex-col items-center max-w-xs">
+                        <div class="flex flex-col justify-center items-center max-w-xs">
                             <a href="{{ url('/') }}" class="block mb-4">
                                 <x-application-logo class="w-20 h-20 fill-current text-white" />
                             </a>
                             <p class="text-center text-gray-400 dark:text-white/60">
-                                {{ config('app.name', 'Laravel') }} - Secure Payment Application
+                                {{ config('app.name', 'Laravel') }} - Billing & Payment
                             </p>
                         </div>
                     </div>
