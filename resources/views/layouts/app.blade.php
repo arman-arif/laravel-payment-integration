@@ -7,7 +7,6 @@
     <title> {{ config('app.name') }} - Billing & Payment </title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
     @livewireStyles
 </head>
 <body
@@ -43,6 +42,9 @@
         </main>
     </div>
 </div>
+
+<!-- Toast Container -->
+<x-toast-container />
 
 @livewireScripts
 </body>

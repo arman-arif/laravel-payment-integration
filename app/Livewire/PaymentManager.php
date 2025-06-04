@@ -19,6 +19,8 @@ class PaymentManager extends Component
     public $editingPaymentId = null;
     public $showForm = false;
     public $search = '';
+    public $showDeleteConfirmation = false;
+    public $paymentToDelete = null;
 
     protected $rules = [
         'name' => 'required|string|max:255',
@@ -53,6 +55,8 @@ class PaymentManager extends Component
         $this->amount = '';
         $this->currency = 'DKK';
         $this->editingPaymentId = null;
+        $this->showDeleteConfirmation = false;
+        $this->paymentToDelete = null;
         $this->resetErrorBag();
     }
 
@@ -69,7 +73,11 @@ class PaymentManager extends Component
                 'amount' => $this->amount,
                 'currency' => $this->currency,
             ]);
-            session()->flash('message', 'Payment updated successfully!');
+            $this->dispatch('toast', [
+                'type' => 'success',
+                'title' => 'Success!',
+                'message' => 'Payment updated successfully!'
+            ]);
         } else {
             Payment::create([
                 'name' => $this->name,
@@ -78,7 +86,11 @@ class PaymentManager extends Component
                 'amount' => $this->amount,
                 'currency' => $this->currency,
             ]);
-            session()->flash('message', 'Payment created successfully!');
+            $this->dispatch('toast', [
+                'type' => 'success',
+                'title' => 'Success!',
+                'message' => 'Payment created successfully!'
+            ]);
         }
 
         $this->hideForm();
@@ -96,10 +108,30 @@ class PaymentManager extends Component
         $this->showForm = true;
     }
 
-    public function delete($paymentId)
+    public function confirmDelete($paymentId)
     {
-        Payment::find($paymentId)->delete();
-        session()->flash('message', 'Payment deleted successfully!');
+        $this->paymentToDelete = $paymentId;
+        $this->showDeleteConfirmation = true;
+    }
+
+    public function cancelDelete()
+    {
+        $this->showDeleteConfirmation = false;
+        $this->paymentToDelete = null;
+    }
+
+    public function delete()
+    {
+        if ($this->paymentToDelete) {
+            Payment::find($this->paymentToDelete)->delete();
+            $this->dispatch('toast', [
+                'type' => 'success',
+                'title' => 'Deleted!',
+                'message' => 'Payment deleted successfully!'
+            ]);
+            $this->showDeleteConfirmation = false;
+            $this->paymentToDelete = null;
+        }
     }
 
     #[Layout('layouts.app', ['page' => 'payments'])]

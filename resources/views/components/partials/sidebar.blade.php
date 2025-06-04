@@ -13,9 +13,9 @@
                 <x-sidebar.menu-item
                     name="Dashboard"
                     :active-pages="['dashboard']"
-                    :prevent-click="true"
                     icon="dashboard"
                     :page="$page"
+                    href="{{ route('dashboard') }}"
                 />
 
                 <x-sidebar.menu-item

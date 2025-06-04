@@ -13,6 +13,8 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        @livewireStyles
     </head>
     <body
         x-data="{ page: 'auth', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
@@ -83,6 +85,7 @@
                 </div>
             </div>
         </div>
-        <!-- ===== Page Wrapper End ===== -->
+
+        @livewireScripts
     </body>
 </html>
