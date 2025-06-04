@@ -22,7 +22,7 @@
         </div>
 
         <img
-            class="logo-icon"
+            class="logo-icon h-14"
             :class="sidebarToggle ? 'lg:block' : 'hidden'"
             src="{{ $logoIcon }}"
             alt="Logo"

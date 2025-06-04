@@ -31,9 +31,9 @@
             </button>
             <!-- Hamburger Toggle BTN -->
 
-            <a href="index.html" class="lg:hidden">
-                <img class="dark:hidden" src="./images/logo/logo.svg" alt="Logo" />
-                <img class="hidden dark:block" src="./images/logo/logo-dark.svg" alt="Logo" />
+            <a href="/dashboard" class="lg:hidden">
+                <img class="dark:hidden h-12" src="{{  logo('light') }}" alt="Logo"/>
+                <img class="hidden dark:block h-12" src="{{  logo('dark') }}" alt="Logo"/>
             </a>
 
             <!-- Application nav menu button -->
@@ -408,7 +408,7 @@
 
                     <ul class="flex flex-col gap-1 border-b border-gray-200 pt-4 pb-3 dark:border-gray-800">
                         <li>
-                            <a href="profile.html"
+                            <a href="{{  route('profile.edit') }}"
                                 class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
                                 <svg class="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300"
                                     width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -421,10 +421,10 @@
                             </a>
                         </li>
                     </ul>
-                    <form action="{{  route('logout') }}" method="POST">
+                    <form action="{{  route('logout') }}" method="POST" class="w-full">
                         @csrf
                         <button
-                            class="group text-theme-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                            class="group w-full text-theme-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
                             <svg class="fill-gray-500 group-hover:fill-gray-700 dark:group-hover:fill-gray-300"
                                 width="24" height="24" viewBox="0 0 24 24" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">
