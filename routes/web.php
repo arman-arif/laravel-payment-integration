@@ -12,6 +12,7 @@ Route::get('/', fn() => abort(404));
 Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
     Route::get('dashboard/payments', PaymentManager::class)->name('payments');
+    Route::view('dashboard/payment/{payment}', 'payment-details')->name('payment.details');
 });
 
 Route::middleware('auth')->group(function () {

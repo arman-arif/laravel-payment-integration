@@ -441,8 +441,9 @@
                         <!-- Payment ID -->
                         @if($viewingPayment->payment_id)
                             <div>
-                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                <label class="flex mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                     Payment ID
+                                    <a href="{{ route('payment.details', $viewingPayment->id) }}" class="ml-auto text-blue-500" target="_blank">Details</a>
                                 </label>
                                 <div
                                     class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90">

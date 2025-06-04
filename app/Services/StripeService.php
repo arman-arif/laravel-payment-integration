@@ -47,9 +47,14 @@ class StripeService
         return $paymentIntent->toArray();
     }
 
+    public function getPaymentIntentById($paymentIntentId)
+    {
+        return $this->stripe->paymentIntents->retrieve($paymentIntentId);
+    }
+
     public function retrivePaymentIntent($paymentIntentId)
     {
-        $paymentIntent = $this->stripe->paymentIntents->retrieve($paymentIntentId);
+        $paymentIntent = $this->getPaymentIntentById($paymentIntentId);
 
         return $paymentIntent->toArray();
     }

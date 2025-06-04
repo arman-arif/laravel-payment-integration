@@ -12,12 +12,17 @@ class StripeController extends Controller
     //
     public function confirm(Request $request, StripeService $stripe)
     {
-        $paymentIntent = $stripe->retrivePaymentIntent($request->payment_intent);
+        try {
+            $paymentIntent = $stripe->retrivePaymentIntent($request->payment_intent);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            abort(404);
+        }
 
         $payment = Payment::where('payment_id', $paymentIntent['id'])->first();
 
         if ($paymentIntent['status'] !== 'succeeded') {
-            return to_route('payment', $payment->id)->with('error', 'Payment failed.');
+            return to_route('payment', $payment->id)->with('error', 'Payment failed');
         }
 
         $charge = $stripe->retrieveCharge($paymentIntent['latest_charge']);
@@ -28,8 +33,6 @@ class StripeController extends Controller
         $payment->paid_at = $charge['created'];
         $payment->payment_meta = $paymentMeta;
         $payment->save();
-
-        //dd($request->all(), $paymentIntent);
 
         return to_route('payment.success', $payment->id);
     }
