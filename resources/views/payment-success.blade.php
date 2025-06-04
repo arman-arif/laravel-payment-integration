@@ -18,7 +18,7 @@
                     <p class="mt-4 text-sm text-gray-700 dark:text-gray-400">
                         If you have any questions or need further assistance, feel free to contact us at:
                         <a class="font-medium text-indigo-600 dark:text-indigo-400 underline">
-                            admin@phdcarrent.fo
+                            admin@payment.test
                         </a>
                     </p>
                 </div>

@@ -20,17 +20,23 @@ mount(function (Payment $payment, StripeService $stripe) {
 <x-app-layout>
     @volt("payment-details")
     <div>
-        <div class="mb-4 border p-4 rounded-lg">
-            Payment Model: <code class="px-3">{{ $payment->is_paid ? 'Paid' : 'Unpaid' }}</code>
+        <div class="mb-4 border dark:border-gray-600 p-4 rounded-lg">
+            <div class="dark:text-white">
+                Payment Model: <code class="px-3">{{ $payment->is_paid ? 'Paid' : 'Unpaid' }}</code>
+            </div>
             @dump($payment->toArray())
         </div>
-        <div class="mb-4 border p-4 rounded-lg">
-            Payment Intent: <code class="px-3">{{ $paymentIntent['status'] }}</code>
+        <div class="mb-4 border dark:border-gray-600 p-4 rounded-lg">
+            <div class="dark:text-white">
+                Payment Intent: <code class="px-3">{{ $paymentIntent['status'] }}</code>
+            </div>
             @dump($paymentIntent)
         </div>
         @if($latestCharge)
-            <div class="mb-4 border p-4 rounded-lg">
-                Latest Charge: <code class="px-3">{{ $latestCharge['status'] }}</code>
+            <div class="mb-4 border dark:border-gray-600 p-4 rounded-lg">
+                <div class="dark:text-white">
+                    Latest Charge: <code class="px-3">{{ $latestCharge['status'] }}</code>
+                </div>
                 @dump($latestCharge)
             </div>
         @endif

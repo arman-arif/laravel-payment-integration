@@ -20,6 +20,8 @@ class extends Component {
     public $showLoader = false;
     public $paymentProcessing = false;
 
+    public $stripeStatus = null;
+
     public function mount()
     {
         if (!isset($this->payment)) abort(404);
@@ -89,7 +91,11 @@ class extends Component {
         $stripe = new StripeService();
         $paymentIntent = $stripe->retrivePaymentIntent($paymentIntentId);
 
-        if (in_array($paymentIntent['status'], ['succeeded', 'processing'])) {
+        $this->stripeStatus = $paymentIntent['status'];
+        if ($this->stripeStatus=='canceled') {
+            $this->stripeCardReady = true;
+        }
+        if (in_array($this->stripeStatus, ['succeeded', 'processing'])) {
             $this->payment->payment_gateway = 'stripe';
             $this->payment->payment_id = $paymentIntentId;
             $this->payment->saveQuietly();
@@ -116,6 +122,10 @@ class extends Component {
             default => null
         };
 
+        if ($this->currentGateway=='stripe' && $this->stripeStatus=='canceled') {
+            return;
+        }
+
         $this->dispatch('changeGateway', gateway: $this->currentGateway);
     }
 
@@ -131,7 +141,7 @@ class extends Component {
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="w-full md:w-4/12">
                     <div class="mb-4">
-                        <h2 class="font-semibold text-xl text-red-700">PHD CAR RENT LTD.</h2>
+                        <h2 class="font-semibold text-xl text-green-600">FASTER PAYMENT LTD.</h2>
                         <p class="text-gray-500">Payment Portal</p>
                     </div>
 
@@ -197,6 +207,11 @@ class extends Component {
 
                     <div wire:ignore x-show="currentGateway==='stripe'">
                         <div class="w-full mb-4" id="stripe-payment-element"></div>
+                        @if($this->stripeStatus=='canceled')
+                            <div class="text-center py-12 text-gray-500 dark:text-gray-400 border dark:border-gray-700 rounded-lg text-lg uppercase font-medium">
+                                This payment has been canceled.
+                            </div>
+                        @endif
                     </div>
 
                     <div wire:ignore x-show="currentGateway==='paypal'">
@@ -210,7 +225,7 @@ class extends Component {
                         <x-loading-spinner size="xl" color="gray"/>
                     </div>
 
-                    @if($stripeCardReady)
+                    @if($stripeCardReady && $this->stripeStatus!='canceled')
                         <button
                             class="items-center gap-2 rounded-lg bg-sky-600 text-white px-4 py-2 text-lg font-medium shadow-theme-xs transition hover:bg-sky-700 dark:hover:bg-sky-500 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
                             wire:click="$dispatch('stripe.confirmConfirmPayment')"
@@ -288,7 +303,7 @@ class extends Component {
                         email: customer.email,
                     }
                 },
-                business: { name: "PHD CAR RENT LTD." }
+                business: { name: "XYZ LTD." }
             };
             const paymentElement = elements.create('payment', elementOptions);
 
