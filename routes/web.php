@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Livewire\PaymentManager;
 use Illuminate\Support\Facades\Route;
+use Livewire\Volt\Volt;
 
 Route::get('/', fn() => abort(404));
 
@@ -18,4 +19,4 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__ . '/auth.php';
 
-Route::get('payment/{payment}', PaymentManager::class)->name('payment');
+Volt::route('payment/{payment}', 'payment-process')->name('payment');

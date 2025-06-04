@@ -91,7 +91,7 @@ class PaymentManager extends Component
                 'payment_id' => $this->payment_id,
                 'payment_gateway' => $this->payment_gateway,
             ]);
-            $this->dispatch('toast', [
+            $this->dispatch('toast', ...[
                 'type' => 'success',
                 'title' => 'Success!',
                 'message' => 'Payment updated successfully!'
@@ -148,7 +148,7 @@ class PaymentManager extends Component
     {
         if ($this->paymentToDelete) {
             Payment::where('id', $this->paymentToDelete)->delete();
-            $this->dispatch('toast', [
+            $this->dispatch('toast', ...[
                 'type' => 'success',
                 'title' => 'Deleted!',
                 'message' => 'Payment deleted successfully!'

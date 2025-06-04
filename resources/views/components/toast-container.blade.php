@@ -1,5 +1,38 @@
 <div
-    x-data="toastManager()"
+    x-data="{
+        toasts: [],
+        nextId: 1,
+
+        addToast(toast) {
+            const id = this.nextId++;
+            const newToast = {
+                id,
+                show: true,
+                type: toast.type || 'success',
+                title: toast.title || '',
+                message: toast.message || '',
+                duration: toast.duration || 5000
+            };
+
+            this.toasts.push(newToast);
+
+            // Auto remove after duration
+            setTimeout(() => {
+                this.removeToast(id);
+            }, newToast.duration);
+        },
+
+        removeToast(id) {
+            const index = this.toasts.findIndex(toast => toast.id === id);
+            if (index > -1) {
+                this.toasts[index].show = false;
+                // Remove from array after animation
+                setTimeout(() => {
+                    this.toasts.splice(index, 1);
+                }, 300);
+            }
+        }
+    }"
     @toast.window="addToast($event.detail)"
     class="fixed top-0 right-0 z-999999 flex flex-col items-end space-y-4 p-6"
     wire:ignore
@@ -74,42 +107,3 @@
         </div>
     </template>
 </div>
-
-<script>
-function toastManager() {
-    return {
-        toasts: [],
-        nextId: 1,
-
-        addToast(toast) {
-            const id = this.nextId++;
-            const newToast = {
-                id,
-                show: true,
-                type: toast.type || 'success',
-                title: toast.title || '',
-                message: toast.message || '',
-                duration: toast.duration || 5000
-            };
-
-            this.toasts.push(newToast);
-
-            // Auto remove after duration
-            setTimeout(() => {
-                this.removeToast(id);
-            }, newToast.duration);
-        },
-
-        removeToast(id) {
-            const index = this.toasts.findIndex(toast => toast.id === id);
-            if (index > -1) {
-                this.toasts[index].show = false;
-                // Remove from array after animation
-                setTimeout(() => {
-                    this.toasts.splice(index, 1);
-                }, 300);
-            }
-        }
-    }
-}
-</script>
