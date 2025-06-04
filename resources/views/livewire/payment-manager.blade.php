@@ -84,6 +84,7 @@
                                 wire:model="email"
                                 class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('email') border-error-300 dark:border-error-700 @enderror"
                                 placeholder="Enter email"
+                                @disabled($is_paid)
                             />
                             @error('email')
                             <p class="mt-1.5 text-xs text-error-500">{{ $message }}</p>
@@ -101,6 +102,7 @@
                                 wire:model="amount"
                                 class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('amount') border-error-300 dark:border-error-700 @enderror"
                                 placeholder="0.00"
+                                @disabled($is_paid)
                             />
                             @error('amount')
                             <p class="mt-1.5 text-xs text-error-500">{{ $message }}</p>
@@ -115,6 +117,7 @@
                             <select
                                 wire:model="currency"
                                 class="h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pr-11 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 @error('currency') border-error-300 dark:border-error-700 @enderror"
+                                @disabled($is_paid)
                             >
                                 <option value="DKK">DKK</option>
                                 <option value="EUR">EUR</option>
@@ -416,6 +419,46 @@
                     </div>
 
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+                        <!-- Payment Gateway -->
+                        @if($viewingPayment->payment_gateway)
+                            <div>
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                    Payment Gateway
+                                </label>
+                                <div
+                                    class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90 capitalize">
+                                    {{ $viewingPayment->payment_gateway }}
+                                </div>
+                            </div>
+                        @endif
+
+                        <!-- Payment ID -->
+                        @if($viewingPayment->payment_id)
+                            <div>
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                    Payment ID
+                                </label>
+                                <div
+                                    class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90">
+                                    {{ $viewingPayment->payment_id }}
+                                </div>
+                            </div>
+                        @endif
+
+                        <!-- Paid At -->
+                        @if($viewingPayment->paid_at)
+                            <div>
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                    Paid At
+                                </label>
+                                <div
+                                    class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90">
+                                    {{ $viewingPayment->paid_at->format('M d, Y \a\t g:i A') }}
+                                </div>
+                            </div>
+                        @endif
+
                         <!-- Status -->
                         <div>
                             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
@@ -464,45 +507,6 @@
                                     </svg>
                                     Payment Link
                                 </a>
-                            </div>
-                        @endif
-
-                        <!-- Payment ID -->
-                        @if($viewingPayment->payment_id)
-                            <div>
-                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                    Payment ID
-                                </label>
-                                <div
-                                    class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90">
-                                    {{ $viewingPayment->payment_id }}
-                                </div>
-                            </div>
-                        @endif
-
-                        <!-- Payment Gateway -->
-                        @if($viewingPayment->payment_gateway)
-                            <div>
-                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                    Payment Gateway
-                                </label>
-                                <div
-                                    class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90 capitalize">
-                                    {{ $viewingPayment->payment_gateway }}
-                                </div>
-                            </div>
-                        @endif
-
-                        <!-- Paid At -->
-                        @if($viewingPayment->paid_at)
-                            <div>
-                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                    Paid At
-                                </label>
-                                <div
-                                    class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90">
-                                    {{ $viewingPayment->paid_at->format('M d, Y \a\t g:i A') }}
-                                </div>
                             </div>
                         @endif
                     </div>

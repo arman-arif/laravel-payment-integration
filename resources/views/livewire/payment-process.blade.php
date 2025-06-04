@@ -18,14 +18,17 @@ class extends Component {
 
     public $stripeCardReady = false;
     public $showLoader = false;
+    public $paymentProcessing = false;
 
     public function mount()
     {
+        if (!isset($this->payment)) abort(404);
+
         $this->stripKey = config('stripe.public_key');
         $this->currency = $this->payment->currency;
 
         if ($this->payment->is_paid) {
-            $this->redirectRoute('payment.success', $payment->id);
+            $this->redirectRoute('payment.success', $this->payment->id);
             return;
         }
 
@@ -130,8 +133,8 @@ class extends Component {
                     <div class="mb-3">
                         <div class="text-sm text-gray-400">Customer</div>
                         <div class="text-truncate">
-                            <p class="font-semibold text-md">{{ $payment->name }}</p>
-                            <p class="text-gray-600">{{ $payment->email }}</p>
+                            <p class="font-semibold dark:text-white text-md">{{ $payment->name }}</p>
+                            <p class="text-gray-600 dark:text-gray-300">{{ $payment->email }}</p>
                         </div>
                     </div>
 
@@ -192,7 +195,11 @@ class extends Component {
                             class="items-center gap-2 rounded-lg bg-sky-600 text-white px-4 py-2 text-lg font-medium shadow-theme-xs transition hover:bg-sky-700  dark:hover:bg-sky-500"
                             wire:click="$dispatch('stripe.confirmConfirmPayment')"
                         >
-                            Pay {{ $payment->getAmountString() }}
+                            @if($paymentProcessing)
+                                <x-loading-spinner color="white" size="sm"> Processing Payment... </x-loading-spinner>
+                            @else
+                                <span>Pay {{ $payment->getAmountString() }}</span>
+                            @endif
                         </button>
                     @endif
 
@@ -217,8 +224,10 @@ class extends Component {
 
             const elementAppearance = {
                 theme: 'stripe',
+                labels: 'floating',
                 variables: {
                     borderRadius: '8px',
+                    colorPrimary: '#0084d1',
                 }
             };
 
@@ -245,6 +254,7 @@ class extends Component {
 
             Livewire.on('stripe.confirmConfirmPayment', debounce(() => {
                 $wire.updatePayment(paymentIntent.id);
+                $wire.set('paymentProcessing', true);
                 confirmStripeCard(stripe, elements);
                 console.clear();
             }, 300));
@@ -270,6 +280,7 @@ class extends Component {
                 },
             });
             if(error) {
+                setTimeout(() => $wire.set('paymentProcessing', false), 1000)
                 console.error(error);
             }
         }
