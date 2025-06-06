@@ -206,6 +206,7 @@ class extends Component {
                     </div>
 
                     <div wire:ignore x-show="currentGateway==='stripe'">
+                        <div class="w-full mb-2" id="stripe-link-element"></div>
                         <div class="w-full mb-4" id="stripe-payment-element"></div>
                         @if($this->stripeStatus=='canceled')
                             <div class="text-center py-12 text-gray-500 dark:text-gray-400 border dark:border-gray-700 rounded-lg text-lg uppercase font-medium">
@@ -303,8 +304,18 @@ class extends Component {
                         email: customer.email,
                     }
                 },
-                business: { name: "XYZ LTD." }
+                business: { name: "XYZ LTD." },
+                fields: {
+                    billing_details: {
+                        name: customer.name,
+                        email: customer.email,
+                    }
+                },
             };
+
+            const linkAuthElement = elements.create('linkAuthentication');
+            linkAuthElement.mount('#stripe-link-element');
+
             const paymentElement = elements.create('payment', elementOptions);
 
             paymentElement.mount('#stripe-payment-element');

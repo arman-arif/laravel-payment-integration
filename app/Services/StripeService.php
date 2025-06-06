@@ -11,8 +11,9 @@ class StripeService
     private string $version = "2025-05-28.basil";
     private array $paymentMethods = [
         'card',
+        'link',
     ];
-    private string $statementDescriptor = 'PHDCARRENT';
+    //private string $statementDescriptor = 'PHDCARRENT';
     private StripeClient $stripe;
 
 
@@ -35,13 +36,13 @@ class StripeService
     {
         $paymentIntent = $this->stripe->paymentIntents->create([
             // 'statement_descriptor' => $this->statementDescriptor,
-            'automatic_payment_methods' => ['enabled' => false],
+            // 'automatic_payment_methods' => ['enabled' => false],
             'payment_method_types' => $this->paymentMethods,
             'description' => $description,
             'currency' => Str::lower($currency),
             'amount' => $amount * 100,
             'metadata' => $metaData,
-
+            'receipt_email' => $metaData['customer_email'] ?? null,
         ]);
 
         return $paymentIntent->toArray();

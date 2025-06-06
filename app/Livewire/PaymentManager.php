@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Payment;
+use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -38,24 +39,24 @@ class PaymentManager extends Component
         'payment_gateway' => 'nullable|string|max:255',
     ];
 
-    public function updatingSearch()
+    public function updatingSearch(): void
     {
         $this->resetPage();
     }
 
-    public function showCreateForm()
+    public function showCreateForm(): void
     {
         $this->resetForm();
         $this->showForm = true;
     }
 
-    public function hideForm()
+    public function hideForm(): void
     {
         $this->showForm = false;
         $this->resetForm();
     }
 
-    public function resetForm()
+    public function resetForm(): void
     {
         $this->name = '';
         $this->email = '';
@@ -74,7 +75,7 @@ class PaymentManager extends Component
         $this->resetErrorBag();
     }
 
-    public function save()
+    public function save(): void
     {
         $this->validate();
 
@@ -116,7 +117,7 @@ class PaymentManager extends Component
         $this->hideForm();
     }
 
-    public function edit($id)
+    public function edit($id): void
     {
         $payment = Payment::where('id', $id)->first();
         $this->editingPaymentId = $payment->id;
@@ -132,19 +133,19 @@ class PaymentManager extends Component
         $this->showViewModal = false;
     }
 
-    public function confirmDelete($id)
+    public function confirmDelete($id): void
     {
         $this->paymentToDelete = $id;
         $this->showDeleteConfirmation = true;
     }
 
-    public function cancelDelete()
+    public function cancelDelete(): void
     {
         $this->showDeleteConfirmation = false;
         $this->paymentToDelete = null;
     }
 
-    public function delete()
+    public function delete(): void
     {
         if ($this->paymentToDelete) {
             Payment::where('id', $this->paymentToDelete)->delete();
@@ -158,7 +159,7 @@ class PaymentManager extends Component
         }
     }
 
-    public function togglePaymentStatus($id)
+    public function togglePaymentStatus($id): void
     {
         $payment = Payment::where('id', $id)->first();
         $newStatus = !$payment->is_paid;
@@ -175,26 +176,26 @@ class PaymentManager extends Component
         ]);
     }
 
-    public function viewPayment($id)
+    public function viewPayment($id): void
     {
         $this->viewingPayment = Payment::where('id', $id)->first();
         $this->showViewModal = true;
     }
 
-    public function closeViewModal()
+    public function closeViewModal(): void
     {
         $this->showViewModal = false;
         $this->viewingPayment = null;
     }
 
     #[Layout('layouts.app', ['page' => 'payments'])]
-    public function render()
+    public function render(): View
     {
         $payments = Payment::where('name', 'like', '%' . $this->search . '%')
             ->orWhere('email', 'like', '%' . $this->search . '%')
             ->orWhere('description', 'like', '%' . $this->search . '%')
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(6);
 
         return view('livewire.payment-manager', compact('payments'));
     }

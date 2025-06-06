@@ -263,7 +263,7 @@
                                             @if(!$payment->is_paid) href="{{ route('payment', $payment->id) }}" @endif
                                             target="_blank"
                                         >
-                                            Link
+                                            Payment Link
                                         </a>
                                         <button
                                             wire:click="viewPayment('{{ $payment->id }}')"
